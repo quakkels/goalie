@@ -19,3 +19,4 @@ debug
 
 # Runtime files
 start.bat
+settings/prod.json
