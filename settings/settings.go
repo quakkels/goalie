@@ -42,3 +42,11 @@ func loadSettingsByEnv(env string) {
 		fmt.Println("Error while parsing the configuration file. ", err)
 	}
 }
+
+// Get settings
+func Get() Settings {
+	if &settings == nil {
+		Init()
+	}
+	return settings
+}
