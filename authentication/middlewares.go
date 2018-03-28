@@ -1,9 +1,31 @@
 package authentication
 
-// import (
-// 	//"fmt"
-// 	//jwt "github.com/dgrijalva/jwt-go"
-// 	"net/http"
-// )
+import (
+	"fmt"
+	"net/http"
 
-// func RequireTokenAuthentication(rw http.ResponseWriter, req *http.Request, next http.HandlerFunc) {}
+	jwt "github.com/dgrijalva/jwt-go"
+	request "github.com/dgrijalva/jwt-go/request"
+)
+
+// RequireTokenAuthentication is middleware to protect endpoints from unauthorized access.
+func RequireTokenAuthentication(
+	rw http.ResponseWriter,
+	req *http.Request, next http.HandlerFunc) {
+	authBackend := InitJWTAuthenticationBackend()
+
+	token, err := request.ParseFromRequest(req, request.OAuth2Extractor,
+		func(token *jwt.Token) (interface{}, error) {
+			if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
+				return nil, fmt.Errorf(
+					"Unexpected signing method: %v", token.Header["alg"])
+			}
+			return authBackend.PublicKey, nil
+		})
+
+	if err == nil && token.Valid {
+		next(rw, req)
+	} else {
+		rw.WriteHeader(http.StatusUnauthorized)
+	}
+}
