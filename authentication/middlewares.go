@@ -14,7 +14,9 @@ func RequireTokenAuthentication(
 	req *http.Request, next http.HandlerFunc) {
 	authBackend := InitJWTAuthenticationBackend()
 
-	token, err := request.ParseFromRequest(req, request.OAuth2Extractor,
+	token, err := request.ParseFromRequest(
+		req,
+		request.OAuth2Extractor,
 		func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
 				return nil, fmt.Errorf(

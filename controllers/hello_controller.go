@@ -8,3 +8,8 @@ import (
 func HelloController(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	w.Write([]byte("Hello, World!"))
 }
+
+// HelloProtected is here
+func HelloProtected(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+	w.Write([]byte("You are authenticated."))
+}

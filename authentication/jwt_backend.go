@@ -56,14 +56,17 @@ func (backend *JWTAuthenticationBackend) Authenticate(user *models.User) bool {
 func (backend *JWTAuthenticationBackend) GenerateToken(
 	userUUID string) (string, error) {
 
+	now := time.Now()
+	exp := now.Add(
+		time.Hour * time.Duration(
+			settings.Get().JWTExpirationDelta))
+
 	token := jwt.NewWithClaims(
 		jwt.SigningMethodRS512,
 		&jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(
-				time.Hour * time.Duration(
-					settings.Get().JWTExpirationDelta)).Unix(),
-			IssuedAt: time.Now().Unix(),
-			Subject:  userUUID,
+			ExpiresAt: exp.Unix(),
+			IssuedAt:  now.Unix(),
+			Subject:   userUUID,
 		})
 
 	tokenString, err := token.SignedString(backend.privateKey)
